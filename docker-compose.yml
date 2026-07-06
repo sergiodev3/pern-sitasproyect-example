@@ -1,0 +1,24 @@
+# PostgreSQL local para desarrollo.
+# Levantar con:   docker compose up -d
+# Detener con:    docker compose down
+# Borrar datos:   docker compose down -v
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: reservas_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: reservas_user
+      POSTGRES_PASSWORD: reservas_pass
+      POSTGRES_DB: reservas_db
+    ports:
+      # Mapeamos al puerto 5433 de tu máquina (formato "host:contenedor")
+      # para NO chocar con un PostgreSQL nativo que ya use el 5432
+      # (situación muy común). Si no tienes ninguno, puedes usar "5432:5432"
+      # y ajustar DATABASE_URL en backend/.env.
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

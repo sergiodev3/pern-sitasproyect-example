@@ -1,0 +1,30 @@
+{
+  "name": "reservas-backend",
+  "version": "1.0.0",
+  "description": "API REST de la Mini Plataforma de Reservas y Citas (stack PERN)",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "db:init": "node db/init.js"
+  },
+  "keywords": [
+    "pern",
+    "express",
+    "postgresql",
+    "jwt",
+    "educativo"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.22.0",
+    "zod": "^4.4.3"
+  }
+}
