@@ -12,6 +12,8 @@ Proyecto educativo full-stack con **PostgreSQL + Express + React + Node.js**. Un
 - **Validación rigurosa** con Zod: errores 400 estructurados y reglas de negocio.
 - **Zonas horarias bien hechas**: `TIMESTAMPTZ` + ISO/UTC en la API + `Intl.DateTimeFormat` en el cliente. Despliega en un servidor UTC y las horas jamás se desfasan.
 - **UUIDs** como llaves primarias con `gen_random_uuid()`.
+- **Roles y control de acceso**: JWT con claim de rol, middleware `requireAdmin`, y un panel de administración separado del panel de cliente.
+- **Modelado de estados**: ciclo de vida de una cita (`scheduled` → `completed`/`no_show`/`cancelled`) con transiciones protegidas a nivel de base de datos.
 
 ## Stack
 
@@ -33,6 +35,13 @@ Proyecto educativo full-stack con **PostgreSQL + Express + React + Node.js**. Un
 | [06](docs/step-06-frontend-react-vite-ts.md) | Frontend: React + rutas protegidas + AuthContext |
 | [07](docs/step-07-fechas-utc-frontend.md) | Fechas: del input local a UTC y de vuelta |
 | [08](docs/step-08-deploy-produccion.md) | Deploy: Neon + Render + Vercel |
+| [09](docs/step-09-roles-de-usuario-y-estados-de-citas.md) | Backend: roles de usuario y estados de citas |
+| [10](docs/step-10-panel-de-administracion.md) | Frontend: panel de administración |
+| [11](docs/step-11-probar-api-thunder-client.md) | Probar la API con Thunder Client |
+
+### 📊 Diagramas
+
+Material de referencia visual (no un step secuencial): flujo general de la app, flujo de autenticación, entidad-relación, casos de uso y estados de una cita — ver [`docs/diagramas.md`](docs/diagramas.md).
 
 ## Quick start
 
@@ -65,23 +74,25 @@ npm run dev
 | POST | `/api/auth/login` | No | Iniciar sesión (setea cookie de sesión) |
 | POST | `/api/auth/logout` | No | Cerrar sesión (borra la cookie) |
 | GET | `/api/auth/me` | 🔒 | Usuario de la sesión actual |
-| GET | `/api/appointments` | 🔒 | Mis citas (ordenadas por fecha) |
+| GET | `/api/appointments` | 🔒 | Mi historial de citas (todos los estados) |
 | POST | `/api/appointments` | 🔒 | Crear cita (`scheduled_at` en ISO/UTC) |
-| DELETE | `/api/appointments/:id` | 🔒 | Cancelar una cita mía |
+| DELETE | `/api/appointments/:id` | 🔒 | Cancelar una cita mía (cambia su estado a `cancelled`, no la borra) |
+| GET | `/api/admin/appointments` | 🔒 admin | Ver TODAS las citas, con dueño (nombre/email) |
+| PATCH | `/api/admin/appointments/:id/status` | 🔒 admin | Marcar una cita como `completed` o `no_show` |
 
-**Reglas de negocio:** no se pueden agendar citas en el pasado (400) ni dos citas del mismo usuario a la misma hora exacta (409). Un usuario nunca puede ver ni borrar citas ajenas (404).
+**Reglas de negocio:** no se pueden agendar citas en el pasado (400) ni dos citas activas del mismo usuario a la misma hora exacta (409 — un índice único parcial permite reutilizar la hora si la cita anterior fue cancelada). Un usuario nunca puede ver ni cancelar citas ajenas (404). Solo un admin puede ver todas las citas o marcarlas como completadas/no-show (403 si no lo es); intentar re-marcar una cita que ya cambió de estado da 409.
 
 ## Estructura
 
 ```
 ├── docker-compose.yml     # PostgreSQL 16 local
-├── docs/                  # Guías paso a paso (steps 01–08)
+├── docs/                  # Guías paso a paso (steps 01–11) + diagramas.md
 ├── backend/
-│   ├── db/                # schema.sql + script de inicialización
+│   ├── db/                # schema.sql + scripts de inicialización y seed del admin
 │   └── src/
 │       ├── config/        # env validado (Zod) + pool de pg
-│       ├── middlewares/   # auth (JWT), validate (Zod), error handler
-│       ├── routes/        # definición de endpoints
+│       ├── middlewares/   # auth (JWT), admin (rol), validate (Zod), error handler
+│       ├── routes/        # definición de endpoints (auth, appointments, admin)
 │       ├── controllers/   # HTTP: extraer datos, armar respuestas
 │       ├── services/      # lógica de negocio + SQL
 │       └── schemas/       # schemas de validación Zod
@@ -90,9 +101,9 @@ npm run dev
         ├── services/      # axios (withCredentials) + API calls
         ├── context/       # AuthContext (sesión global)
         ├── hooks/         # useAuth
-        ├── components/    # ProtectedRoute, Navbar, AppointmentCard
-        ├── pages/         # Login, Register, Appointments, NewAppointment
-        └── utils/         # dates.ts: conversión local ⇄ UTC
+        ├── components/    # ProtectedRoute, AdminRoute, Navbar, AppointmentCard
+        ├── pages/         # Login, Register, Appointments, NewAppointment, AdminAppointments
+        └── utils/         # dates.ts (local ⇄ UTC), status.ts (etiquetas de estado)
 ```
 
 ## Licencia

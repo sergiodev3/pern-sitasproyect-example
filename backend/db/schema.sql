@@ -37,5 +37,36 @@ CREATE TABLE IF NOT EXISTS appointments (
   -- Regla de negocio a nivel de base de datos: un usuario no puede tener
   -- dos citas a la misma hora exacta. Aunque el backend también lo valida,
   -- la base de datos es la ÚLTIMA línea de defensa (condiciones de carrera).
+  -- (Este UNIQUE se reemplaza más abajo por un índice parcial, una vez que
+  -- el cancelado deja de ser un DELETE físico.)
   CONSTRAINT appointments_user_schedule_unique UNIQUE (user_id, scheduled_at)
 );
+
+-- ============================================================
+-- ROLES DE USUARIO Y ESTADO DE CITAS
+-- ADD COLUMN IF NOT EXISTS hace que volver a correr `npm run db:init`
+-- sea seguro en instalaciones que ya tenían las tablas creadas
+-- (mismo patrón idempotente que el resto de este archivo).
+-- ============================================================
+
+-- TEXT + CHECK en vez de un ENUM nativo de Postgres: mismo espíritu de
+-- simplicidad que la elección de UUID sin extensiones. Un ENUM de Postgres
+-- es más "elegante" pero agregar/quitar valores después (ALTER TYPE) tiene
+-- reglas especiales; con CHECK basta con editar la lista de valores aquí.
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'client'
+    CHECK (role IN ('client', 'admin'));
+
+ALTER TABLE appointments
+  ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'scheduled'
+    CHECK (status IN ('scheduled', 'completed', 'no_show', 'cancelled'));
+
+-- Con el cancelado ahora como cambio de estado (no DELETE físico), la
+-- restricción UNIQUE original seguiría contando la fila 'cancelled' e
+-- impediría volver a agendar la misma hora tras cancelar. La sustituimos
+-- por un índice único PARCIAL que ignora las citas canceladas.
+ALTER TABLE appointments DROP CONSTRAINT IF EXISTS appointments_user_schedule_unique;
+
+CREATE UNIQUE INDEX IF NOT EXISTS appointments_user_schedule_unique
+  ON appointments (user_id, scheduled_at)
+  WHERE status <> 'cancelled';

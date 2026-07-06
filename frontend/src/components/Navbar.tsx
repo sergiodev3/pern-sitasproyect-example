@@ -17,6 +17,11 @@ export function Navbar() {
       </Link>
       {user && (
         <div className="navbar-actions">
+          {user.role === 'admin' && (
+            <Link to="/admin/appointments" className="navbar-link">
+              Panel Admin
+            </Link>
+          )}
           <span className="navbar-user">Hola, {user.name}</span>
           <button onClick={handleLogout} className="btn btn-secondary">
             Cerrar sesión

@@ -20,15 +20,20 @@ const COOKIE_OPTIONS = {
   maxAge: 24 * 60 * 60 * 1000, // 1 día, igual que la expiración del JWT
 };
 
-function signToken(userId) {
-  // 'sub' (subject) es el claim estándar de JWT para "de quién es el token"
-  return jwt.sign({ sub: userId }, env.JWT_SECRET, { expiresIn: '1d' });
+function signToken(user) {
+  // 'sub' (subject) es el claim estándar de JWT para "de quién es el token".
+  // Incluir el rol aquí evita una consulta extra a la base en cada petición
+  // protegida, PERO tiene un costo: si promueves a alguien a admin mientras
+  // ya tiene sesión iniciada, su token viejo sigue diciendo role:'client'
+  // hasta que vuelva a loguearse. Es un trade-off deliberado, no un bug:
+  // el JWT es una "foto" del usuario al momento de firmarlo.
+  return jwt.sign({ sub: user.id, role: user.role }, env.JWT_SECRET, { expiresIn: '1d' });
 }
 
 export async function register(req, res, next) {
   try {
     const user = await authService.registerUser(req.body);
-    res.cookie('token', signToken(user.id), COOKIE_OPTIONS);
+    res.cookie('token', signToken(user), COOKIE_OPTIONS);
     res.status(201).json({ user });
   } catch (error) {
     next(error);
@@ -38,7 +43,7 @@ export async function register(req, res, next) {
 export async function login(req, res, next) {
   try {
     const user = await authService.validateCredentials(req.body);
-    res.cookie('token', signToken(user.id), COOKIE_OPTIONS);
+    res.cookie('token', signToken(user), COOKIE_OPTIONS);
     res.json({ user });
   } catch (error) {
     next(error);

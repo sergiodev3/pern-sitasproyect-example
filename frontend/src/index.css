@@ -52,6 +52,17 @@ body {
   font-size: 0.9rem;
 }
 
+.navbar-link {
+  color: var(--color-primary);
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.navbar-link:hover {
+  text-decoration: underline;
+}
+
 /* ---------- Layout ---------- */
 .page,
 .auth-page {
@@ -195,7 +206,7 @@ body {
 .card {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
   background: var(--color-card);
   border: 1px solid var(--color-border);
@@ -217,4 +228,47 @@ body {
   color: var(--color-muted);
   font-size: 0.9rem;
   margin-top: 0.3rem;
+}
+
+.card-owner {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+}
+
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* ---------- Badges de estado de una cita ---------- */
+.badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badge-scheduled {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-no_show {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-cancelled {
+  background: #f3f4f6;
+  color: #6b7280;
 }

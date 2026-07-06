@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:3000/api/health)",
+      "Bash(curl -s -i -X OPTIONS http://localhost:3000/api/auth/login -H 'Origin: http://localhost:5174' -H 'Access-Control-Request-Method: POST')",
+      "Bash(curl -s -i -X POST http://localhost:3000/api/auth/register -H 'Content-Type: application/json' -H 'Origin: http://localhost:5174' -d '{\"name\":\"Prueba\",\"email\":\"prueba-fix@mail.com\",\"password\":\"secreta123\"}')",
+      "Bash(export PGPASSWORD=root)",
+      "Bash(\"/c/Program Files/PostgreSQL/17/bin/psql\" -U postgres -h localhost -p 5432 -d reservas_db -c \"DELETE FROM users WHERE email = 'prueba-fix@mail.com';\")",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //F //PID 7676)",
+      "Bash(curl -s -c /tmp/admin_cookies.txt -X POST http://localhost:3000/api/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"admin@barberia.com\",\"password\":\"admin12345\"}')",
+      "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' -b /tmp/client_cookies.txt http://localhost:3000/api/admin/appointments)",
+      "Bash(curl -s -b /tmp/admin_cookies.txt http://localhost:3000/api/admin/appointments)",
+      "Bash(curl -s -b /tmp/admin_cookies.txt -X PATCH http://localhost:3000/api/admin/appointments/e31a630c-326d-4014-82d2-e45e6647dbb2/status -H 'Content-Type: application/json' -d '{\"status\":\"completed\"}')",
+      "Bash(curl -s -b /tmp/admin_cookies.txt -X PATCH http://localhost:3000/api/admin/appointments/e31a630c-326d-4014-82d2-e45e6647dbb2/status -H 'Content-Type: application/json' -d '{\"status\":\"scheduled\"}')",
+      "Bash(curl -s -b /tmp/admin_cookies.txt -X PATCH http://localhost:3000/api/admin/appointments/00000000-0000-0000-0000-000000000000/status -H 'Content-Type: application/json' -d '{\"status\":\"no_show\"}')",
+      "Bash(\"/c/Program Files/PostgreSQL/17/bin/psql\" -U postgres -h localhost -p 5432 -d reservas_db -c \"DELETE FROM users WHERE email IN \\('carlos@mail.com'\\);\")",
+      "Bash(\"/c/Program Files/PostgreSQL/17/bin/psql\" -U postgres -h localhost -p 5432 -d reservas_db -c \"SELECT email, role FROM users;\")",
+      "Bash(curl -s -o /dev/null -w \"Frontend HTTP status: %{http_code}\\\\n\" http://localhost:5174/)",
+      "Bash(curl -s -o /dev/null -w \"5173 status: %{http_code}\\\\n\" http://localhost:5173/)",
+      "Bash(taskkill //F //PID 17324)",
+      "Bash(curl -s -i -X OPTIONS http://localhost:3000/api/auth/login -H \"Origin: http://localhost:5173\" -H \"Access-Control-Request-Method: POST\")",
+      "Bash(npm run *)"
+    ]
+  }
+}

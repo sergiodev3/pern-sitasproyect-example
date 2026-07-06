@@ -1,11 +1,13 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { AdminRoute } from './components/AdminRoute';
 import { Navbar } from './components/Navbar';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Appointments } from './pages/Appointments';
 import { NewAppointment } from './pages/NewAppointment';
+import { AdminAppointments } from './pages/AdminAppointments';
 
 export default function App() {
   const { user } = useAuth();
@@ -33,6 +35,16 @@ export default function App() {
             <ProtectedRoute>
               <NewAppointment />
             </ProtectedRoute>
+          }
+        />
+
+        {/* Ruta de administración: además de requerir sesión, exige role==='admin' */}
+        <Route
+          path="/admin/appointments"
+          element={
+            <AdminRoute>
+              <AdminAppointments />
+            </AdminRoute>
           }
         />
 

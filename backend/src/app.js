@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import { env } from './config/env.js';
 import authRoutes from './routes/auth.routes.js';
 import appointmentsRoutes from './routes/appointments.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
 
 const app = express();
@@ -28,6 +29,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/appointments', appointmentsRoutes);
+app.use('/api/admin', adminRoutes);
 
 // 404 para cualquier ruta no definida arriba
 app.use((req, res) => {
