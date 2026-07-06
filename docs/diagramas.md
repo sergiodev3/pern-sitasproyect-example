@@ -86,7 +86,7 @@ erDiagram
 
 ## 4. Casos de uso
 
-Mermaid no tiene un tipo de diagrama nativo para UML "casos de uso"; lo aproximamos con un flowchart que separa actores, un límite de sistema (`subgraph`) y las acciones disponibles para cada rol:
+diagrama UML "casos de uso"; lo aproximamos con un flowchart que separa actores, un límite de sistema (`subgraph`) y las acciones disponibles para cada rol:
 
 ```mermaid
 flowchart LR
