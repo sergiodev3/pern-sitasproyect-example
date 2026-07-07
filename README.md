@@ -43,6 +43,10 @@ Proyecto educativo full-stack con **PostgreSQL + Express + React + Node.js**. Un
 
 Material de referencia visual (no un step secuencial): flujo general de la app, flujo de autenticación, entidad-relación, casos de uso y estados de una cita — ver [`docs/diagramas.md`](docs/diagramas.md).
 
+### 🛠️ Solución de problemas
+
+¿Error de CORS, "Error de conexión con el servidor", o el backend "no ve" tus cambios en `.env`? Casi siempre es por tener varias terminales abiertas a la vez — ver [`docs/solucion-de-problemas.md`](docs/solucion-de-problemas.md) para diagnosticar puertos/procesos y arreglarlo paso a paso.
+
 ## Quick start
 
 Requisitos: Node.js 20+, Docker Desktop, Git.
